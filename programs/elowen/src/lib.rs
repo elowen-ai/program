@@ -1,0 +1,44 @@
+#![allow(unexpected_cfgs)]
+
+use anchor_lang::prelude::*;
+
+declare_id!("3R63fNvrbn2mb2Em28i4UTPEJN83EAVQDmFuNzrkXVKw");
+
+mod constants;
+mod enums;
+mod functions;
+mod instructions;
+mod state;
+
+use instructions::{
+    alt::{self, *},
+    elw::{self, *},
+};
+
+#[cfg(not(feature = "no-entrypoint"))]
+solana_security_txt::security_txt! {
+    name: "Still test",
+    preferred_languages: "en",
+    project_url: "https://example.io",
+    policy: "https://example.io/policy",
+    contacts: "link:https://example.io/contact",
+    source_code: "https://github.com/example/example",
+    auditors: "https://github.com/example/exampl-auditors"
+}
+
+#[program]
+pub mod elowen {
+    use super::*;
+
+    pub fn initialize_elw(ctx: Context<InitializeElw>, metadata_uri: String) -> Result<()> {
+        elw::initialize(ctx, &metadata_uri)
+    }
+
+    // extra
+    pub fn save_address_lookup_table(
+        ctx: Context<SaveAddressLookupTable>,
+        lookup_table: Pubkey,
+    ) -> Result<()> {
+        alt::save_address_lookup_table(ctx, lookup_table)
+    }
+}
