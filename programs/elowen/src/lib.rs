@@ -9,10 +9,12 @@ mod enums;
 mod functions;
 mod instructions;
 mod state;
+mod events;
 
 use instructions::{
     alt::{self, *},
     elw::{self, *},
+    platform::{self, *},
 };
 
 #[cfg(not(feature = "no-entrypoint"))]
@@ -33,6 +35,16 @@ pub mod elowen {
     pub fn initialize_elw(ctx: Context<InitializeElw>, metadata_uri: String) -> Result<()> {
         elw::initialize(ctx, &metadata_uri)
     }
+
+    // platform
+    pub fn withdraw_platform_elw(ctx: Context<WithdrawPlatformELW>, amount: u64) -> Result<()> {
+        platform::withdraw(ctx, amount)
+    }
+
+    pub fn burn_platform_elw(ctx: Context<BurnPlatformELW>, amount: u64) -> Result<()> {
+        platform::burn(ctx, amount)
+    }
+    // platform
 
     // extra
     pub fn save_address_lookup_table(

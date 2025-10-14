@@ -5,7 +5,8 @@ export type IDLType = Elowen
 
 export enum ErrorCode {
     Unauthorized = 'Unauthorized',
-    PdaAlreadyInUse = 'PdaAlreadyInUse'
+    PdaAlreadyInUse = 'PdaAlreadyInUse',
+    NotEnoughBalanceInVault = 'NotEnoughBalanceInVault'
 }
 
 export type SolanaAddress = string | PublicKey
@@ -18,4 +19,11 @@ export enum VaultAccount {
     Treasury = 'treasury',
     Liquidity = 'liquidity',
     Platform = 'platform'
+}
+
+export enum Currency {
+    USDC = 'USDC',
+    SOL = 'SOL',
+    ELW = 'ELW',
+    WSOL = 'WSOL'
 }

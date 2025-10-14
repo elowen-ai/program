@@ -14,6 +14,12 @@ pub const SIGNER: Pubkey = pubkey!("2FuPdqnyPAGRBtsURuzVpjiYePqCQMLENBz6ZAsLUxxw
 #[cfg(not(feature = "devnet"))]
 pub const SIGNER: Pubkey = pubkey!("2FuPdqnyPAGRBtsURuzVpjiYePqCQMLENBz6ZAsLUxxw");
 
+// squad multisig wallet
+#[cfg(feature = "devnet")]
+pub const MULTISIG: Pubkey = pubkey!("537dhD3qji3rSCYrkbZFNEHB5etnip8zhdDK7nK9RSpT");
+#[cfg(not(feature = "devnet"))]
+pub const MULTISIG: Pubkey = pubkey!("537dhD3qji3rSCYrkbZFNEHB5etnip8zhdDK7nK9RSpT");
+
 // all percentages
 pub const EDA_PERCENTAGE: u16 = 1000;
 pub const TEAM_PERCENTAGE: u16 = 1000;

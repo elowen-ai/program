@@ -52,6 +52,7 @@
     "@metaplex-foundation/umi-bundle-defaults": "^1.2.0",
     "@solana/spl-token": "^0.4.13",
     "@solana/web3.js": "^1.98.2",
+    "@sqds/multisig": "^2.1.4",
     "axios": "^1.9.0",
     "nodemailer": "^7.0.3",
     "winston": "^3.17.0"
