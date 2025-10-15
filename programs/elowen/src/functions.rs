@@ -6,9 +6,9 @@ use anchor_spl::{
     token::{self, spl_token::instruction::AuthorityType},
 };
 
-use crate::constants::TEAM_WALLETS;
+use crate::constants::*;
 use crate::enums::VaultAccount;
-use chrono::{Months, TimeZone, Utc};
+use chrono::{Datelike, Months, TimeZone, Utc};
 
 pub fn get_account_size(size: usize) -> usize {
     size + 14
@@ -293,4 +293,16 @@ pub fn get_months_later(timestamp: i64, month: u32) -> i64 {
     let datetime = Utc.timestamp_opt(timestamp, 0).unwrap();
     let new_datetime = datetime.checked_add_months(Months::new(month)).unwrap();
     new_datetime.timestamp()
+}
+
+pub fn get_months_difference(from: i64, to: i64) -> i32 {
+    let from_date = Utc.timestamp_opt(from, 0).unwrap();
+    let to_date = Utc.timestamp_opt(to, 0).unwrap();
+    (to_date.year() - from_date.year()) * 12 + (to_date.month() as i32 - from_date.month() as i32)
+}
+
+pub fn calculate_reward_distribution(timestamp: i64) -> u64 {
+    let months = get_months_difference(PRESALE_RULES.end_time, timestamp);
+    let halving = (months / 4) as u32;
+    BASE_REWARD >> halving
 }

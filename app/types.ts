@@ -7,7 +7,9 @@ export enum ErrorCode {
     Unauthorized = 'Unauthorized',
     PdaAlreadyInUse = 'PdaAlreadyInUse',
     PeriodNotReached = 'PeriodNotReached',
+    AllRewardsClaimed = 'AllRewardsClaimed',
     MemberShareNotFound = 'MemberShareNotFound',
+    ClaimableRewardNotReady = 'ClaimableRewardNotReady',
     NotEnoughBalanceInVault = 'NotEnoughBalanceInVault',
     AlreadyClaimedForThisPeriod = 'AlreadyClaimedForThisPeriod'
 }
@@ -29,4 +31,9 @@ export enum Currency {
     SOL = 'SOL',
     ELW = 'ELW',
     WSOL = 'WSOL'
+}
+
+export type ClaimableReward = {
+    timestamp: number
+    percentage: number
 }

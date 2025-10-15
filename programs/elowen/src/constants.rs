@@ -1,5 +1,8 @@
 use anchor_lang::prelude::*;
 
+// reward calculation start time
+pub const BASE_REWARD: u64 = 62_500_000 * 10u64.pow(9); // 62.5M tokens for first period
+
 // token metadata
 pub const SYMBOL: &str = "ELW";
 pub const NAME: &str = "Elowen";

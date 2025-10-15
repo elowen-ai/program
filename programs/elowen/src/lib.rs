@@ -15,6 +15,7 @@ use instructions::{
     alt::{self, *},
     elw::{self, *},
     team::{self, *},
+    reward::{self, *},
     platform::{self, *},
 };
 
@@ -52,6 +53,15 @@ pub mod elowen {
         team::claim(ctx)
     }
     // team
+
+    // reward
+    pub fn claim_elw_reward(
+        ctx: Context<ClaimReward>,
+        claimable_rewards: Vec<ClaimableReward>,
+    ) -> Result<()> {
+        reward::claim(ctx, claimable_rewards)
+    }
+    // reward
 
     // extra
     pub fn save_address_lookup_table(

@@ -18,3 +18,10 @@ pub struct MemberClaimAccount {
     pub amount: u64,
     pub last_period: i64,
 }
+
+#[account]
+#[derive(InitSpace)]
+pub struct RewardAccount {
+    pub amount: u64,
+    pub percentage: u16,
+}

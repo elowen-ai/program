@@ -6,8 +6,12 @@ pub enum CustomError {
     Unauthorized,
     #[msg("Period not reached")]
     PeriodNotReached,
+    #[msg("All rewards have been claimed")]
+    AllRewardsClaimed,
     #[msg("Member share not found")]
     MemberShareNotFound,
+    #[msg("Claimable reward not ready")]
+    ClaimableRewardNotReady,
     #[msg("Not enough balance in vault")]
     NotEnoughBalanceInVault,
     #[msg("Already claimed for this period")]
