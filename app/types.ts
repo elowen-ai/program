@@ -6,7 +6,10 @@ export type IDLType = Elowen
 export enum ErrorCode {
     Unauthorized = 'Unauthorized',
     PdaAlreadyInUse = 'PdaAlreadyInUse',
-    NotEnoughBalanceInVault = 'NotEnoughBalanceInVault'
+    PeriodNotReached = 'PeriodNotReached',
+    MemberShareNotFound = 'MemberShareNotFound',
+    NotEnoughBalanceInVault = 'NotEnoughBalanceInVault',
+    AlreadyClaimedForThisPeriod = 'AlreadyClaimedForThisPeriod'
 }
 
 export type SolanaAddress = string | PublicKey

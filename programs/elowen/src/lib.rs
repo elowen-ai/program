@@ -14,6 +14,7 @@ mod events;
 use instructions::{
     alt::{self, *},
     elw::{self, *},
+    team::{self, *},
     platform::{self, *},
 };
 
@@ -45,6 +46,12 @@ pub mod elowen {
         platform::burn(ctx, amount)
     }
     // platform
+
+    // team
+    pub fn claim_team_elw(ctx: Context<ClaimTeamELW>) -> Result<()> {
+        team::claim(ctx)
+    }
+    // team
 
     // extra
     pub fn save_address_lookup_table(

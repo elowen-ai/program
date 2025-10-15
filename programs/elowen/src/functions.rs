@@ -1,12 +1,24 @@
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::*;
+use anchor_spl::associated_token::get_associated_token_address;
 use anchor_spl::{
     associated_token,
     token::{self, spl_token::instruction::AuthorityType},
 };
 
+use crate::constants::TEAM_WALLETS;
+use crate::enums::VaultAccount;
+use chrono::{Months, TimeZone, Utc};
+
 pub fn get_account_size(size: usize) -> usize {
     size + 14
+}
+pub fn get_vault_account(vault: VaultAccount) -> (Pubkey, u8) {
+    Pubkey::find_program_address(&[vault.as_str().as_bytes().as_ref()], &crate::ID)
+}
+
+pub fn get_vault_account_token_ata(elw_mint: Pubkey, vault: VaultAccount) -> Pubkey {
+    get_associated_token_address(&get_vault_account(vault).0, &elw_mint)
 }
 
 pub fn mint_token_with_signer<'info>(
@@ -261,4 +273,24 @@ pub fn burn_token_with_pda_key<'info>(
 
 pub fn calculate_by_percentage(total: u64, percentage: u16) -> u64 {
     (total as f64 * percentage as f64 / 10000.0) as u64
+}
+
+pub fn is_team_member(key: &Pubkey) -> bool {
+    TEAM_WALLETS.iter().any(|(wallet, _)| key.eq(wallet))
+}
+
+pub fn get_member_percentage(address: &Pubkey) -> Option<u16> {
+    TEAM_WALLETS.iter().find_map(|(wallet, share)| {
+        if wallet == address {
+            Some(*share)
+        } else {
+            None
+        }
+    })
+}
+
+pub fn get_months_later(timestamp: i64, month: u32) -> i64 {
+    let datetime = Utc.timestamp_opt(timestamp, 0).unwrap();
+    let new_datetime = datetime.checked_add_months(Months::new(month)).unwrap();
+    new_datetime.timestamp()
 }

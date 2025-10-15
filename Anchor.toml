@@ -22,3 +22,5 @@ initialize-elw = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/initiali
 platform-burn = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/platform/burn.spec.ts"
 platform-vaults = "ts-node tests/platform/vaults.ts"
 platform-withdraw = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/platform/withdraw.spec.ts"
+team-account = "ts-node tests/team/account.ts"
+team-claim = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/team/claim.spec.ts"

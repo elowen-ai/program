@@ -11,3 +11,10 @@ pub struct PlatformAccount {
 pub struct AddressLookupTableAccount {
     pub lookup_table: Pubkey,
 }
+
+#[account]
+#[derive(InitSpace)]
+pub struct MemberClaimAccount {
+    pub amount: u64,
+    pub last_period: i64,
+}
