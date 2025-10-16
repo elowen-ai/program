@@ -306,3 +306,26 @@ pub fn calculate_reward_distribution(timestamp: i64) -> u64 {
     let halving = (months / 4) as u32;
     BASE_REWARD >> halving
 }
+
+pub fn usdc_to_sol(amount: u64, price: i64, exponent: i32) -> u64 {
+    const SOL_DECIMALS: i32 = 9;
+    const USDC_DECIMALS: i32 = 6;
+
+    let usdc = amount as u128;
+    let sol = price as i128;
+
+    let exponent_adjust = (SOL_DECIMALS - USDC_DECIMALS) - exponent;
+    let sol_u128 = if exponent_adjust >= 0 {
+        let multiplier: u128 = 10u128.pow(exponent_adjust as u32);
+        usdc.checked_mul(multiplier)
+            .unwrap()
+            .checked_div(sol.abs() as u128)
+            .unwrap()
+    } else {
+        let multiplier: u128 = 10u128.pow((-exponent_adjust) as u32);
+        usdc.checked_div((sol.abs() as u128).checked_mul(multiplier).unwrap())
+            .unwrap()
+    };
+
+    sol_u128 as u64
+}

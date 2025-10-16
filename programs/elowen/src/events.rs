@@ -11,3 +11,9 @@ pub struct ClaimRewardEvent {
     pub receiver: Pubkey,
     pub amount: u64,
 }
+
+#[event]
+pub struct BuyPresaleTokenEvent {
+    pub receiver: Pubkey,
+    pub amount: u64,
+}

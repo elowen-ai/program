@@ -1,9 +1,9 @@
 import ElowenProgram from './program'
-import { BN } from '@coral-xyz/anchor'
 import { getVaultPda } from '@sqds/multisig'
-import { SolanaAddress, VaultAccount } from './types'
+import { IdlTypes, BN } from '@coral-xyz/anchor'
 import { getElwMint } from './instructions/platform'
 import { ParsedAccountData, PublicKey } from '@solana/web3.js'
+import { Currency, IDLType, PresaleType, PresaleTypeMap, SolanaAddress, VaultAccount } from './types'
 import { getAssociatedTokenAddressSync, NATIVE_MINT } from '@solana/spl-token'
 
 export const WSOL_MINT = NATIVE_MINT
@@ -135,4 +135,58 @@ export async function getVaultAccountWithElwAta(vault: VaultAccount) {
         account,
         elwAta
     }
+}
+
+export function currencyToRustEnum(currency: Currency): IdlTypes<IDLType>['currency'] {
+    switch (currency) {
+        case Currency.USDC:
+            return { usdc: {} }
+        case Currency.SOL:
+            return { sol: {} }
+        case Currency.WSOL:
+            return { wsol: {} }
+        case Currency.ELW:
+            return { elw: {} }
+        default:
+            throw new Error('Invalid currency')
+    }
+}
+
+export function currencyFromRustEnum(_currency: IdlTypes<IDLType>['currency']): Currency {
+    const keys = Object.keys(_currency).map((k) => k.toLowerCase())
+    if (keys.includes('usdc')) {
+        return Currency.USDC
+    } else if (keys.includes('sol')) {
+        return Currency.SOL
+    } else if (keys.includes('wsol')) {
+        return Currency.WSOL
+    } else if (keys.includes('elw')) {
+        return Currency.ELW
+    } else {
+        throw new Error('Invalid currency')
+    }
+}
+
+export function presaleTypeToRustEnum(presaleType: PresaleType): IdlTypes<IDLType>['presaleType'] {
+    switch (presaleType) {
+        case PresaleType.ThreeMonthsLockup:
+            return { threeMonthsLockup: {} }
+        case PresaleType.SixMonthsLockup:
+            return { sixMonthsLockup: {} }
+    }
+}
+
+export function presaleTypeFromRustEnum(
+    presaleType: IdlTypes<IDLType>['presaleType']
+): PresaleType {
+    const keys = Object.keys(presaleType).map((k) => k.charAt(0).toLowerCase() + k.slice(1))
+    if (keys.includes('threeMonthsLockup')) {
+        return PresaleType.ThreeMonthsLockup
+    } else if (keys.includes('sixMonthsLockup')) {
+        return PresaleType.SixMonthsLockup
+    }
+}
+
+export function findPresaleTypeFromNumber(number: number) {
+    return Object.keys(PresaleTypeMap).find((key) => PresaleTypeMap[key] === number) as PresaleType
 }

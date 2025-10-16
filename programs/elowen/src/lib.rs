@@ -11,11 +11,13 @@ mod instructions;
 mod state;
 mod events;
 
+use enums::*;
 use instructions::{
     alt::{self, *},
     elw::{self, *},
     team::{self, *},
     reward::{self, *},
+    presale::{self, *},
     platform::{self, *},
 };
 
@@ -62,6 +64,28 @@ pub mod elowen {
         reward::claim(ctx, claimable_rewards)
     }
     // reward
+
+    // presale
+    pub fn buy_presale_elw(
+        ctx: Context<BuyPresaleElw>,
+        presale_type: PresaleType,
+        amount_to_buy: u64,
+        currency: Currency,
+    ) -> Result<()> {
+        presale::buy(ctx, presale_type, amount_to_buy, currency)
+    }
+
+    pub fn claim_presale_elw(
+        ctx: Context<ClaimPresaleElw>,
+        _presale_type: PresaleType,
+    ) -> Result<()> {
+        presale::claim(ctx)
+    }
+
+    pub fn burn_unsold_presale_elw(ctx: Context<BurnUnsoldElw>) -> Result<()> {
+        presale::burn(ctx)
+    }
+    // presale
 
     // extra
     pub fn save_address_lookup_table(
