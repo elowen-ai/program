@@ -15,6 +15,7 @@ use enums::*;
 use instructions::{
     alt::{self, *},
     elw::{self, *},
+    eda::{self, *},
     team::{self, *},
     reward::{self, *},
     premium::{self, *},
@@ -40,6 +41,20 @@ pub mod elowen {
     pub fn initialize_elw(ctx: Context<InitializeElw>, metadata_uri: String) -> Result<()> {
         elw::initialize(ctx, &metadata_uri)
     }
+
+    // eda
+    pub fn withdraw_eda_elw(ctx: Context<WithdrawEdaELW>, amount: u64) -> Result<()> {
+        eda::elw::withdraw(ctx, amount)
+    }
+
+    pub fn withdraw_eda_sol(ctx: Context<WithdrawEdaSOL>, amount: u64) -> Result<()> {
+        eda::sol::withdraw(ctx, amount)
+    }
+
+    pub fn withdraw_eda_usdc(ctx: Context<WithdrawEdaUSDC>, amount: u64) -> Result<()> {
+        eda::usdc::withdraw(ctx, amount)
+    }
+    // eda
 
     // platform
     pub fn withdraw_platform_elw(ctx: Context<WithdrawPlatformELW>, amount: u64) -> Result<()> {
