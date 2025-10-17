@@ -33,3 +33,6 @@ presale-buy = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/presale/buy
 presale-claim = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/presale/claim.spec.ts"
 presale-listen = "ts-node tests/presale/listen.ts"
 presale-summary = "ts-node tests/presale/summary.ts"
+premium-buy = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/premium/buy.spec.ts"
+premium-listen = "ts-node tests/premium/listen.ts"
+premium-withdraw = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/premium/withdraw.spec.ts"

@@ -3,7 +3,7 @@ import { getVaultPda } from '@sqds/multisig'
 import { IdlTypes, BN } from '@coral-xyz/anchor'
 import { getElwMint } from './instructions/platform'
 import { ParsedAccountData, PublicKey } from '@solana/web3.js'
-import { Currency, IDLType, PresaleType, PresaleTypeMap, SolanaAddress, VaultAccount } from './types'
+import { Currency, IDLType, PresaleType, PresaleTypeMap, QuoteCurrency, SolanaAddress, VaultAccount } from './types'
 import { getAssociatedTokenAddressSync, NATIVE_MINT } from '@solana/spl-token'
 
 export const WSOL_MINT = NATIVE_MINT
@@ -74,6 +74,42 @@ export function getUsdcMint() {
         return USDC_MAINNET
     } else {
         throw new Error('Invalid cluster')
+    }
+}
+
+export function getQuoteMint(currency: QuoteCurrency | Currency.WSOL) {
+    switch (currency) {
+        case Currency.USDC:
+            return getUsdcMint()
+        case Currency.SOL:
+        case Currency.WSOL:
+            return WSOL_MINT
+        default:
+            throw new Error('Invalid quote currency')
+    }
+}
+
+export function getQuoteCurrency(mint: PublicKey) {
+    switch (mint) {
+        case getUsdcMint():
+            return Currency.USDC
+        case WSOL_MINT:
+            return Currency.SOL
+        default:
+            throw new Error('Invalid quote currency')
+    }
+}
+
+export function getDecimalsByCurrency(currency: Currency): number {
+    switch (currency) {
+        case Currency.USDC:
+            return 6
+        case Currency.SOL:
+        case Currency.WSOL:
+        case Currency.ELW:
+            return 9
+        default:
+            throw new Error('Invalid currency')
     }
 }
 

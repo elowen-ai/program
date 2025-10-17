@@ -17,6 +17,7 @@ use instructions::{
     elw::{self, *},
     team::{self, *},
     reward::{self, *},
+    premium::{self, *},
     presale::{self, *},
     platform::{self, *},
 };
@@ -86,6 +87,24 @@ pub mod elowen {
         presale::burn(ctx)
     }
     // presale
+
+    // premium
+    pub fn buy_premium(
+        ctx: Context<BuyPremium>,
+        amount_to_pay: u64,
+        currency: Currency,
+    ) -> Result<()> {
+        premium::buy(ctx, amount_to_pay, currency)
+    }
+
+    pub fn withdraw_treasury_elw(ctx: Context<WithdrawTreasuryELW>, amount: u64) -> Result<()> {
+        premium::elw::withdraw(ctx, amount)
+    }
+
+    pub fn withdraw_treasury_usdc(ctx: Context<WithdrawTreasuryUSDC>, amount: u64) -> Result<()> {
+        premium::usdc::withdraw(ctx, amount)
+    }
+    // premium
 
     // extra
     pub fn save_address_lookup_table(

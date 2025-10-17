@@ -69,6 +69,7 @@ pub const TEAM_PERCENTAGE: u16 = 1000;
 pub const REWARD_PERCENTAGE: u16 = 5000;
 pub const PRESALE_PERCENTAGE: u16 = 1000;
 pub const LIQUIDITY_PERCENTAGE: u16 = 2000;
+pub const PREMIUM_ELW_BURN_PERCENTAGE: u16 = 1000;
 
 pub struct PresaleRules {
     pub three_months_lockup_price: u64,
