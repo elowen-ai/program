@@ -3,13 +3,20 @@ import { getVaultPda } from '@sqds/multisig'
 import { IdlTypes, BN } from '@coral-xyz/anchor'
 import { getElwMint } from './instructions/platform'
 import { ParsedAccountData, PublicKey } from '@solana/web3.js'
-import { Currency, IDLType, PresaleType, PresaleTypeMap, QuoteCurrency, SolanaAddress, VaultAccount } from './types'
+import { Currency, CurrencyMap, IDLType, PresaleType, PresaleTypeMap, QuoteCurrency, SolanaAddress, VaultAccount } from './types'
 import { getAssociatedTokenAddressSync, NATIVE_MINT } from '@solana/spl-token'
+import { getAmmConfigAddress } from './ray'
 
 export const WSOL_MINT = NATIVE_MINT
 
 export const USDC_DEVNET = new PublicKey('28zvdJE2BwGLMeqtP1punErLRE38rE2qM7uvVAnXBKaL')
 export const USDC_MAINNET = new PublicKey('EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v')
+
+export const CPMM_DEVNET = new PublicKey('CPMDWBwJDtYax9qW7AyRuVC19Cc4L4Vcy4n2BHAbHkCW')
+export const CPMM_MAINNET = new PublicKey('CPMMoo8L3F4NbTegBCKVNunggL7H1ZpdTHKxQB5qKP1C')
+
+export const LOCKING_DEVNET = new PublicKey('DLockwT7X7sxtLmGH9g5kmfcjaBtncdbUmi738m5bvQC')
+export const LOCKING_MAINNET = new PublicKey('LockrWmn6K5twhz3y9w1dQERbmgSaRkfnTeTKbpofwE')
 
 export const TOKEN_METADATA_PROGRAM_ID = new PublicKey(
     'metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s'
@@ -65,6 +72,39 @@ export function fixDecimals(value: number, decimals: number) {
 
 export function maybeToPublicKey(value: SolanaAddress) {
     return typeof value === 'string' ? new PublicKey(value) : value
+}
+
+export function toFixedDown(num: number, decimals: number = 0) {
+    const factor = 10 ** decimals
+    return (Math.floor(num * factor) / factor).toFixed(decimals)
+}
+
+export function calculateMinimumOutput(inputAmount: number, price: number, slippageBps: number) {
+    return inputAmount * price * (1 - slippageBps / 100)
+}
+
+export function calculateMaximumInput(outputAmount: number, price: number, slippageBps: number) {
+    return outputAmount / price / (1 - slippageBps / 100)
+}
+
+export function calculateSlippageUp(
+    amount: number,
+    slippageBps: number = 0.5,
+    decimals: number = 9
+) {
+    return toTokenFormat(amount * (1 + slippageBps / 100), decimals)
+}
+
+export function calculateSlippageDown(
+    amount: number,
+    slippageBps: number = 0.5,
+    decimals: number = 9
+) {
+    return toTokenFormat(amount * (1 - slippageBps / 100), decimals)
+}
+
+export function getAmmConfig() {
+    return getAmmConfigAddress(ElowenProgram.cluster === 'devnet' ? 0 : 1)
 }
 
 export function getUsdcMint() {
@@ -225,4 +265,28 @@ export function presaleTypeFromRustEnum(
 
 export function findPresaleTypeFromNumber(number: number) {
     return Object.keys(PresaleTypeMap).find((key) => PresaleTypeMap[key] === number) as PresaleType
+}
+
+export function findCurrencyFromNumber(number: number) {
+    return Object.keys(CurrencyMap).find((key) => CurrencyMap[key] === number) as Currency
+}
+
+export function getCpSwapProgramId() {
+    if (ElowenProgram.cluster === 'devnet') {
+        return CPMM_DEVNET
+    } else if (ElowenProgram.cluster === 'mainnet-beta') {
+        return CPMM_MAINNET
+    } else {
+        throw new Error('Invalid cluster')
+    }
+}
+
+export function getLockingProgramId() {
+    if (ElowenProgram.cluster === 'devnet') {
+        return LOCKING_DEVNET
+    } else if (ElowenProgram.cluster === 'mainnet-beta') {
+        return LOCKING_MAINNET
+    } else {
+        throw new Error('Invalid cluster')
+    }
 }

@@ -51,3 +51,19 @@ pub struct SummaryAccount {
     pub is_unsold_tokens_burned: bool,
 }
 
+#[account]
+#[derive(InitSpace)]
+pub struct LpStateAccount {
+    pub lp_amount: u64,
+    pub elw_amount: u64,
+    pub quote_amount: u64,
+    pub quote_currency: u8,
+    pub pool_state: Pubkey,
+}
+
+#[account]
+#[derive(InitSpace)]
+pub struct LockedLpStateAccount {
+    pub quote_currency: u8,
+    pub locked_lp_amount: u64,
+}

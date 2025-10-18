@@ -6,3 +6,4 @@ pub mod reward;
 pub mod presale;
 pub mod premium;
 pub mod platform;
+pub mod liquidity;

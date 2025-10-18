@@ -21,7 +21,12 @@ idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build"]
 [dependencies]
 anchor-lang = { version = "0.31.1", features = ["init-if-needed"] }
 anchor-spl = "0.31.1"
-chrono = "0.4.42"
+chrono = "0.4.41"
 mpl-token-metadata = "5.1.0"
 pyth-solana-receiver-sdk = "0.6.1"
 solana-security-txt = "1.1.1"
+raydium-cp-swap = { git = "https://github.com/raydium-io/raydium-cp-swap", features = [
+    "no-entrypoint",
+    "cpi",
+] }
+raydium-locking-cpi = { git = "https://github.com/elowen-ai/raydium-locking-cpi" }

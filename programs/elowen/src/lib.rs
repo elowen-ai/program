@@ -21,6 +21,7 @@ use instructions::{
     premium::{self, *},
     presale::{self, *},
     platform::{self, *},
+    liquidity::{self, *}
 };
 
 #[cfg(not(feature = "no-entrypoint"))]
@@ -102,6 +103,34 @@ pub mod elowen {
         presale::burn(ctx)
     }
     // presale
+
+    // liquidity
+    pub fn initialize_cpmm_liquidity(
+        ctx: Context<LiquidityInitialize>,
+        currency: Currency,
+        elw_amount: u64,
+        quote_amount: u64,
+        open_time: u64,
+    ) -> Result<()> {
+        liquidity::cpmm::initialize(ctx, currency, elw_amount, quote_amount, open_time)
+    }
+
+    pub fn deposit_cpmm_liquidity(
+        ctx: Context<LiquidityDeposit>,
+        currency: Currency,
+        lp_token_amount: u64,
+        maximum_elw_amount: u64,
+        maximum_quote_amount: u64,
+    ) -> Result<()> {
+        liquidity::cpmm::deposit(
+            ctx,
+            currency,
+            lp_token_amount,
+            maximum_elw_amount,
+            maximum_quote_amount,
+        )
+    }
+    // liquidity
 
     // premium
     pub fn buy_premium(

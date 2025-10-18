@@ -1,5 +1,7 @@
 import { PublicKey } from '@solana/web3.js'
 import type { Elowen } from '../target/types/elowen'
+import { Metadata } from '@metaplex-foundation/mpl-token-metadata'
+import { getLockedLpStateByFeeNftMint } from './instructions/liquidity/cpmm'
 
 export type IDLType = Elowen
 
@@ -16,6 +18,7 @@ export enum ErrorCode {
     PresaleIsNotStarted = 'PresaleIsNotStarted',
     MemberShareNotFound = 'MemberShareNotFound',
     TokensAlreadyClaimed = 'TokensAlreadyClaimed',
+    InsufficientLiquidity = 'InsufficientLiquidity',
     ClaimableRewardNotReady = 'ClaimableRewardNotReady',
     NotEnoughBalanceInVault = 'NotEnoughBalanceInVault',
     ExceedsTheRemainingAmount = 'ExceedsTheRemainingAmount',
@@ -46,6 +49,13 @@ export enum Currency {
     WSOL = 'WSOL'
 }
 
+export enum CurrencyMap {
+    USDC = 0,
+    SOL = 1,
+    ELW = 2,
+    WSOL = 3
+}
+
 export type ClaimableReward = {
     timestamp: number
     percentage: number
@@ -69,4 +79,16 @@ export enum PresaleType {
 export enum PresaleTypeMap {
     ThreeMonthsLockup = 1,
     SixMonthsLockup = 2
+}
+
+export enum RoundDirection {
+    Floor,
+    Ceiling
+}
+
+export type RaydiumKeyNft = {
+    mint: PublicKey
+    metadata: Metadata
+    account: PublicKey
+    lockedLpState: Awaited<ReturnType<typeof getLockedLpStateByFeeNftMint>> | null
 }

@@ -24,6 +24,8 @@ pub enum CustomError {
     MemberShareNotFound,
     #[msg("Tokens already claimed")]
     TokensAlreadyClaimed,
+    #[msg("Insufficient liquidity")]
+    InsufficientLiquidity,
     #[msg("Claimable reward not ready")]
     ClaimableRewardNotReady,
     #[msg("Not enough balance in vault")]

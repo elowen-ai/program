@@ -1,5 +1,6 @@
 import ElowenProgram from './program'
 
+export * from './ray'
 export * from './utils'
 export * from './types'
 export * from './logger'
