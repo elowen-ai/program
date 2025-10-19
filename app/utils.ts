@@ -3,7 +3,7 @@ import { getVaultPda } from '@sqds/multisig'
 import { IdlTypes, BN } from '@coral-xyz/anchor'
 import { getElwMint } from './instructions/platform'
 import { ParsedAccountData, PublicKey } from '@solana/web3.js'
-import { Currency, CurrencyMap, IDLType, PresaleType, PresaleTypeMap, QuoteCurrency, SolanaAddress, VaultAccount } from './types'
+import { Currency, CurrencyMap, IDLType, PresaleType, PresaleTypeMap, QuoteCurrency, SolanaAddress, SwapDirection, VaultAccount } from './types'
 import { getAssociatedTokenAddressSync, NATIVE_MINT } from '@solana/spl-token'
 import { getAmmConfigAddress } from './ray'
 
@@ -140,6 +140,46 @@ export function getQuoteCurrency(mint: PublicKey) {
     }
 }
 
+export function vaultAccountToRustEnum(vault: VaultAccount): IdlTypes<IDLType>['vaultAccount'] {
+    switch (vault) {
+        case VaultAccount.Eda:
+            return { eda: {} }
+        case VaultAccount.Team:
+            return { team: {} }
+        case VaultAccount.Reward:
+            return { reward: {} }
+        case VaultAccount.Presale:
+            return { presale: {} }
+        case VaultAccount.Treasury:
+            return { treasury: {} }
+        case VaultAccount.Platform:
+            return { platform: {} }
+        case VaultAccount.Liquidity:
+            return { liquidity: {} }
+    }
+}
+
+export function vaultAccountFromRustEnum(vault: IdlTypes<IDLType>['vaultAccount']): VaultAccount {
+    const keys = Object.keys(vault).map((k) => k.toLowerCase())
+    if (keys.includes('platform')) {
+        return VaultAccount.Platform
+    } else if (keys.includes('liquidity')) {
+        return VaultAccount.Liquidity
+    } else if (keys.includes('team')) {
+        return VaultAccount.Team
+    } else if (keys.includes('reward')) {
+        return VaultAccount.Reward
+    } else if (keys.includes('presale')) {
+        return VaultAccount.Presale
+    } else if (keys.includes('treasury')) {
+        return VaultAccount.Treasury
+    } else if (keys.includes('eda')) {
+        return VaultAccount.Eda
+    } else {
+        throw new Error('Invalid vault')
+    }
+}
+
 export function getDecimalsByCurrency(currency: Currency): number {
     switch (currency) {
         case Currency.USDC:
@@ -243,6 +283,28 @@ export function currencyFromRustEnum(_currency: IdlTypes<IDLType>['currency']): 
     }
 }
 
+export function swapDirectionToRustEnum(
+    swapDirection: SwapDirection
+): IdlTypes<IDLType>['swapDirection'] {
+    switch (swapDirection) {
+        case SwapDirection.Input:
+            return { input: {} }
+        case SwapDirection.Output:
+            return { output: {} }
+    }
+}
+
+export function swapDirectionFromRustEnum(
+    swapDirection: IdlTypes<IDLType>['swapDirection']
+): SwapDirection {
+    const keys = Object.keys(swapDirection).map((k) => k.toLowerCase())
+    if (keys.includes('input')) {
+        return SwapDirection.Input
+    } else if (keys.includes('output')) {
+        return SwapDirection.Output
+    }
+}
+
 export function presaleTypeToRustEnum(presaleType: PresaleType): IdlTypes<IDLType>['presaleType'] {
     switch (presaleType) {
         case PresaleType.ThreeMonthsLockup:
@@ -269,6 +331,10 @@ export function findPresaleTypeFromNumber(number: number) {
 
 export function findCurrencyFromNumber(number: number) {
     return Object.keys(CurrencyMap).find((key) => CurrencyMap[key] === number) as Currency
+}
+
+export function getVaultAccountTokenAtaByMint(vault: VaultAccount, mint: PublicKey) {
+    return getAssociatedTokenAddressSync(mint, getVaultAccount(vault), true)
 }
 
 export function getCpSwapProgramId() {

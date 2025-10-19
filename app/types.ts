@@ -10,10 +10,12 @@ export enum ErrorCode {
     AllTokensSold = 'AllTokensSold',
     PresaleIsEnded = 'PresaleIsEnded',
     InvalidCurrency = 'InvalidCurrency',
+    NoRewardInVault = 'NoRewardInVault',
     PdaAlreadyInUse = 'PdaAlreadyInUse',
     PeriodNotReached = 'PeriodNotReached',
     PresaleIsNotEnded = 'PresaleIsNotEnded',
     AllRewardsClaimed = 'AllRewardsClaimed',
+    ZeroTradingTokens = 'ZeroTradingTokens',
     InsufficientBalance = 'InsufficientBalance',
     PresaleIsNotStarted = 'PresaleIsNotStarted',
     MemberShareNotFound = 'MemberShareNotFound',
@@ -79,6 +81,11 @@ export enum PresaleType {
 export enum PresaleTypeMap {
     ThreeMonthsLockup = 1,
     SixMonthsLockup = 2
+}
+
+export enum SwapDirection {
+    Input,
+    Output
 }
 
 export enum RoundDirection {
