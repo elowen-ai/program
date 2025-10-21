@@ -1,10 +1,20 @@
 import { loadLogger } from './logger'
-import { IDLType, ErrorCode } from './types'
 import { Umi } from '@metaplex-foundation/umi'
 import programIdl from '../target/idl/elowen.json'
 import type { Elowen } from '../target/types/elowen'
+import { getElwMint } from './instructions/platform'
+import { getAssociatedTokenAddressSync } from '@solana/spl-token'
 import { createUmi } from '@metaplex-foundation/umi-bundle-defaults'
+import { IDLType, ErrorCode, Currency, SolanaAddress } from './types'
 import { mplTokenMetadata } from '@metaplex-foundation/mpl-token-metadata'
+import {
+    formatNumber,
+    getQuoteMint,
+    getTokenAccountInfo,
+    fromTokenFormat,
+    maybeToPublicKey,
+    WSOL_MINT
+} from './utils'
 import {
     Cluster,
     Commitment,
@@ -64,6 +74,21 @@ export function errorMap(error: SendTransactionError) {
         return new Error(ErrorCode.Unauthorized)
     }
 
+    if (
+        error.message.includes('Error Code: ConstraintRaw') &&
+        error.message.includes('caused by account')
+    ) {
+        return new Error(ErrorCode.WrongAccountGiven)
+    }
+
+    if (error.message.includes('already in use')) {
+        return new Error(ErrorCode.PdaAlreadyInUse)
+    }
+
+    if (error.message.includes('Transaction too large')) {
+        return new Error(ErrorCode.ExceededTransactionLimit)
+    }
+
     return error
 }
 
@@ -100,6 +125,49 @@ export async function fillTransactionRequirements(transaction: Transaction, paye
     transaction.recentBlockhash = result.blockhash
     transaction.feePayer = payer ?? ElowenProgram.wallet.publicKey
     return transaction
+}
+
+export async function getUserSolBalance(userWallet: SolanaAddress) {
+    const balance = fromTokenFormat(
+        await ElowenProgram.connection.getBalance(maybeToPublicKey(userWallet))
+    )
+    return {
+        amount: balance,
+        amountFormatted: formatNumber(balance)
+    }
+}
+
+export async function getUserUsdcBalance(userWallet: SolanaAddress) {
+    const user = await getTokenAccountInfo(
+        getAssociatedTokenAddressSync(getQuoteMint(Currency.USDC), maybeToPublicKey(userWallet))
+    )
+    const balance = user?.parsed.info.tokenAmount.uiAmount || 0
+    return {
+        amount: balance,
+        amountFormatted: formatNumber(balance)
+    }
+}
+
+export async function getUserWsolBalance(userWallet: SolanaAddress) {
+    const user = await getTokenAccountInfo(
+        getAssociatedTokenAddressSync(WSOL_MINT, maybeToPublicKey(userWallet))
+    )
+    const balance = user?.parsed.info.tokenAmount.uiAmount || 0
+    return {
+        amount: balance,
+        amountFormatted: formatNumber(balance)
+    }
+}
+
+export async function getUserElwBalance(userWallet: SolanaAddress) {
+    const user = await getTokenAccountInfo(
+        getAssociatedTokenAddressSync(await getElwMint(), maybeToPublicKey(userWallet))
+    )
+    const balance = user?.parsed.info.tokenAmount.uiAmount || 0
+    return {
+        amount: balance,
+        amountFormatted: formatNumber(balance)
+    }
 }
 
 export function initializeProgram(connection: Connection, wallet: Wallet, cluster: Cluster) {

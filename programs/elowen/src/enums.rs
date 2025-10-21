@@ -4,46 +4,58 @@ use anchor_lang::prelude::*;
 pub enum CustomError {
     #[msg("Unauthorized")]
     Unauthorized,
-    #[msg("All tokens sold")]
-    AllTokensSold,
-    #[msg("Presale is ended")]
-    PresaleIsEnded,
-    #[msg("Presale is not ended")]
-    PresaleIsNotEnded,
-    #[msg("Invalid currency")]
-    InvalidCurrency,
     #[msg("Period not reached")]
     PeriodNotReached,
-    #[msg("All rewards have been claimed")]
-    AllRewardsClaimed,
-    #[msg("Insufficient balance")]
-    InsufficientBalance,
-    #[msg("Presale is not started")]
-    PresaleIsNotStarted,
-    #[msg("Member share not found")]
-    MemberShareNotFound,
-    #[msg("Tokens already claimed")]
-    TokensAlreadyClaimed,
-    #[msg("Insufficient liquidity")]
-    InsufficientLiquidity,
-    #[msg("Claimable reward not ready")]
-    ClaimableRewardNotReady,
     #[msg("Not enough balance in vault")]
     NotEnoughBalanceInVault,
+    #[msg("Already claimed for this period")]
+    AlreadyClaimedForThisPeriod,
+    #[msg("Claimable reward not ready")]
+    ClaimableRewardNotReady,
+    #[msg("Not implemented yet")]
+    NotImplementedYet,
+    #[msg("All rewards claimed")]
+    AllRewardsClaimed,
+    #[msg("Presale is not started")]
+    PresaleIsNotStarted,
+    #[msg("Presale is ended")]
+    PresaleIsEnded,
+    #[msg("All tokens sold")]
+    AllTokensSold,
+    #[msg("Exceeds the maximum contribution")]
+    ExceedsTheMaximumContribution,
+    #[msg("Below the minimum contribution")]
+    BelowTheMinimumContribution,
     #[msg("Exceeds the remaining amount")]
     ExceedsTheRemainingAmount,
-    #[msg("Unsold tokens already burned")]
-    UnsoldTokensAlreadyBurned,
-    #[msg("Cannot burn until presale is done")]
+    #[msg("Cannot burn until presale done")]
     CannotBurnUntilPresaleDone,
     #[msg("Cannot claim until unlock time")]
     CannotClaimUntilUnlockTime,
-    #[msg("Already claimed for this period")]
-    AlreadyClaimedForThisPeriod,
-    #[msg("Below the minimum contribution")]
-    BelowTheMinimumContribution,
-    #[msg("Exceeds the maximum contribution")]
-    ExceedsTheMaximumContribution
+    #[msg("Insufficient balance")]
+    InsufficientBalance,
+    #[msg("Presale is not ended")]
+    PresaleIsNotEnded,
+    #[msg("Tokens already claimed")]
+    TokensAlreadyClaimed,
+    #[msg("Invalid currency")]
+    InvalidCurrency,
+    #[msg("Unsold tokens already burned")]
+    UnsoldTokensAlreadyBurned,
+    #[msg("Insufficient liquidity")]
+    InsufficientLiquidity,
+    #[msg("No reward in vault")]
+    NoRewardInVault,
+    #[msg("Cannot initialize until presale done")]
+    CannotInitializeUntilPresaleDone,
+    #[msg("This amount is locked for mining rewards")]
+    ThisAmountIsLockedForMiningRewards,
+    #[msg("No claimable rewards")]
+    NoClaimableRewards,
+    #[msg("Insufficient reward")]
+    InsufficientReward,
+    #[msg("Member share not found")]
+    MemberShareNotFound,
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq)]
@@ -58,6 +70,12 @@ pub enum Currency {
     SOL,
     ELW,
     WSOL,
+}
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq, Debug)]
+pub enum SwapDirection {
+    Input,
+    Output,
 }
 
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq, Debug)]
@@ -83,4 +101,11 @@ impl VaultAccount {
             VaultAccount::Platform => "platform",
         }
     }
+}
+
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Copy, PartialEq, Eq, Debug)]
+pub enum MiningAction {
+    Claim,
+    Deposit,
+    Withdraw,
 }

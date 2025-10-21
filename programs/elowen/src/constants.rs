@@ -1,6 +1,6 @@
 use anchor_lang::prelude::*;
 
-use crate::{enums::{CustomError, PresaleType}, functions::{calculate_by_percentage, get_months_later}};
+use crate::{enums::*, functions::*};
 
 // reward calculation start time
 pub const BASE_REWARD: u64 = 62_500_000 * 10u64.pow(9); // 62.5M tokens for first period
@@ -10,20 +10,21 @@ pub const SYMBOL: &str = "ELW";
 pub const NAME: &str = "Elowen";
 pub const SUPPLY: u64 = 1_000_000_000 * 10u64.pow(9);
 
+// WSOL mint for using SOL in the program processes
+pub const WSOL_MINT: Pubkey = pubkey!("So11111111111111111111111111111111111111112");
+
 // The signer wallet is to prevent unauthorized access to some methods with incorrect data.
 // For example, in reward distribution
 // So it's the wallet that the platform uses to access the contract basically, but there are no funds.
 // All funds will be held in PDAs on the program at all times.
 #[cfg(feature = "devnet")]
-pub const SIGNER: Pubkey = pubkey!("2FuPdqnyPAGRBtsURuzVpjiYePqCQMLENBz6ZAsLUxxw");
+pub const SIGNER: Pubkey = pubkey!("9HGJSAC4HAwtQEpGSDNSWxDsksBVUFHVDUnu5JbhVwnK");
 #[cfg(not(feature = "devnet"))]
-pub const SIGNER: Pubkey = pubkey!("2FuPdqnyPAGRBtsURuzVpjiYePqCQMLENBz6ZAsLUxxw");
-
-// squad multisig wallet
+pub const SIGNER: Pubkey = pubkey!("9HGJSAC4HAwtQEpGSDNSWxDsksBVUFHVDUnu5JbhVwnK");
 #[cfg(feature = "devnet")]
-pub const MULTISIG: Pubkey = pubkey!("537dhD3qji3rSCYrkbZFNEHB5etnip8zhdDK7nK9RSpT");
+pub const MULTISIG: Pubkey = pubkey!("Fp4bFEeAxRSDiZZzDBUWLVmfGxdLzDCNCviihLK51hCf");
 #[cfg(not(feature = "devnet"))]
-pub const MULTISIG: Pubkey = pubkey!("537dhD3qji3rSCYrkbZFNEHB5etnip8zhdDK7nK9RSpT");
+pub const MULTISIG: Pubkey = pubkey!("Fp4bFEeAxRSDiZZzDBUWLVmfGxdLzDCNCviihLK51hCf");
 
 // Payment token USDC in mainnet and Test USDC in devnet
 #[cfg(feature = "devnet")]
@@ -31,14 +32,10 @@ pub const USDC_MINT: Pubkey = pubkey!("28zvdJE2BwGLMeqtP1punErLRE38rE2qM7uvVAnXB
 #[cfg(not(feature = "devnet"))]
 pub const USDC_MINT: Pubkey = pubkey!("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v");
 
-// WSOL mint for using SOL in the program processes
-pub const WSOL_MINT: Pubkey = pubkey!("So11111111111111111111111111111111111111112");
-
-// team wallets and their percentages
 #[cfg(feature = "devnet")]
 pub const TEAM_WALLETS: &[(Pubkey, u16)] = &[
     (
-        pubkey!("2FuPdqnyPAGRBtsURuzVpjiYePqCQMLENBz6ZAsLUxxw"),
+        pubkey!("9HGJSAC4HAwtQEpGSDNSWxDsksBVUFHVDUnu5JbhVwnK"),
         4300,
     ),
     (
@@ -70,6 +67,10 @@ pub const REWARD_PERCENTAGE: u16 = 5000;
 pub const PRESALE_PERCENTAGE: u16 = 1000;
 pub const LIQUIDITY_PERCENTAGE: u16 = 2000;
 pub const PREMIUM_ELW_BURN_PERCENTAGE: u16 = 1000;
+pub const COLLECT_FEE_EDA_PERCENTAGE: u16 = 5000;
+pub const COLLECT_FEE_BURN_PERCENTAGE: u16 = 2500;
+pub const MINING_YEARLY_ELW_REWARD_PERCENTAGE: u16 = 2500; // Dynamic APR
+pub const MINING_YEARLY_ELW_REWARD_MAX_PERCENTAGE: u16 = 8000; // Max APR
 
 pub struct PresaleRules {
     pub three_months_lockup_price: u64,
@@ -189,3 +190,6 @@ impl PresaleRules {
         ((payment_amount - eda_amount), eda_amount)
     }
 }
+
+// metadata account size
+pub const MAX_METADATA_LEN: usize = 607;

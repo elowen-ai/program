@@ -1,11 +1,22 @@
 import ElowenProgram from './program'
-import { getVaultPda } from '@sqds/multisig'
+import { getAmmConfigAddress } from './ray'
 import { IdlTypes, BN } from '@coral-xyz/anchor'
 import { getElwMint } from './instructions/platform'
 import { ParsedAccountData, PublicKey } from '@solana/web3.js'
-import { Currency, CurrencyMap, IDLType, PresaleType, PresaleTypeMap, QuoteCurrency, SolanaAddress, SwapDirection, VaultAccount } from './types'
 import { getAssociatedTokenAddressSync, NATIVE_MINT } from '@solana/spl-token'
-import { getAmmConfigAddress } from './ray'
+
+import {
+    Currency,
+    CurrencyMap,
+    PresaleType,
+    PresaleTypeMap,
+    SolanaAddress,
+    IDLType,
+    QuoteCurrency,
+    VaultAccount,
+    SwapDirection
+} from './types'
+import { getVaultPda } from '@sqds/multisig'
 
 export const WSOL_MINT = NATIVE_MINT
 
@@ -24,10 +35,6 @@ export const TOKEN_METADATA_PROGRAM_ID = new PublicKey(
 
 export const MINING_YEARLY_ELW_REWARD_PERCENTAGE = 0.25 // 25% Dynamic APR
 export const MINING_YEARLY_ELW_REWARD_MAX_PERCENTAGE = 0.8 // 80% Max APR
-
-export function isSmallerPubKey(firstPubkey: PublicKey, secondPubkey: PublicKey) {
-    return Buffer.compare(firstPubkey.toBytes(), secondPubkey.toBytes()) < 0
-}
 
 export function toBn(amount: number | string | number[] | Uint8Array | Buffer | BN) {
     return new BN(amount)
@@ -75,185 +82,6 @@ export function fixDecimals(value: number, decimals: number) {
 
 export function maybeToPublicKey(value: SolanaAddress) {
     return typeof value === 'string' ? new PublicKey(value) : value
-}
-
-export function toFixedDown(num: number, decimals: number = 0) {
-    const factor = 10 ** decimals
-    return (Math.floor(num * factor) / factor).toFixed(decimals)
-}
-
-export function calculateMinimumOutput(inputAmount: number, price: number, slippageBps: number) {
-    return inputAmount * price * (1 - slippageBps / 100)
-}
-
-export function calculateMaximumInput(outputAmount: number, price: number, slippageBps: number) {
-    return outputAmount / price / (1 - slippageBps / 100)
-}
-
-export function calculateSlippageUp(
-    amount: number,
-    slippageBps: number = 0.5,
-    decimals: number = 9
-) {
-    return toTokenFormat(amount * (1 + slippageBps / 100), decimals)
-}
-
-export function calculateSlippageDown(
-    amount: number,
-    slippageBps: number = 0.5,
-    decimals: number = 9
-) {
-    return toTokenFormat(amount * (1 - slippageBps / 100), decimals)
-}
-
-export function getAmmConfig() {
-    return getAmmConfigAddress(ElowenProgram.cluster === 'devnet' ? 0 : 1)
-}
-
-export function getUsdcMint() {
-    if (ElowenProgram.cluster === 'devnet') {
-        return USDC_DEVNET
-    } else if (ElowenProgram.cluster === 'mainnet-beta') {
-        return USDC_MAINNET
-    } else {
-        throw new Error('Invalid cluster')
-    }
-}
-
-export function getQuoteMint(currency: QuoteCurrency | Currency.WSOL) {
-    switch (currency) {
-        case Currency.USDC:
-            return getUsdcMint()
-        case Currency.SOL:
-        case Currency.WSOL:
-            return WSOL_MINT
-        default:
-            throw new Error('Invalid quote currency')
-    }
-}
-
-export function getQuoteCurrency(mint: PublicKey) {
-    switch (mint) {
-        case getUsdcMint():
-            return Currency.USDC
-        case WSOL_MINT:
-            return Currency.SOL
-        default:
-            throw new Error('Invalid quote currency')
-    }
-}
-
-export function vaultAccountToRustEnum(vault: VaultAccount): IdlTypes<IDLType>['vaultAccount'] {
-    switch (vault) {
-        case VaultAccount.Eda:
-            return { eda: {} }
-        case VaultAccount.Team:
-            return { team: {} }
-        case VaultAccount.Reward:
-            return { reward: {} }
-        case VaultAccount.Presale:
-            return { presale: {} }
-        case VaultAccount.Treasury:
-            return { treasury: {} }
-        case VaultAccount.Platform:
-            return { platform: {} }
-        case VaultAccount.Liquidity:
-            return { liquidity: {} }
-    }
-}
-
-export function vaultAccountFromRustEnum(vault: IdlTypes<IDLType>['vaultAccount']): VaultAccount {
-    const keys = Object.keys(vault).map((k) => k.toLowerCase())
-    if (keys.includes('platform')) {
-        return VaultAccount.Platform
-    } else if (keys.includes('liquidity')) {
-        return VaultAccount.Liquidity
-    } else if (keys.includes('team')) {
-        return VaultAccount.Team
-    } else if (keys.includes('reward')) {
-        return VaultAccount.Reward
-    } else if (keys.includes('presale')) {
-        return VaultAccount.Presale
-    } else if (keys.includes('treasury')) {
-        return VaultAccount.Treasury
-    } else if (keys.includes('eda')) {
-        return VaultAccount.Eda
-    } else {
-        throw new Error('Invalid vault')
-    }
-}
-
-export function getDecimalsByCurrency(currency: Currency): number {
-    switch (currency) {
-        case Currency.USDC:
-            return 6
-        case Currency.SOL:
-        case Currency.WSOL:
-        case Currency.ELW:
-            return 9
-        default:
-            throw new Error('Invalid currency')
-    }
-}
-
-export function getVaultAccount(vault: VaultAccount) {
-    const [pda, _bump] = PublicKey.findProgramAddressSync([Buffer.from(vault)], ElowenProgram.ID)
-    return pda
-}
-
-export function getMembers() {
-    if (ElowenProgram.cluster === 'devnet') {
-        return [
-            new PublicKey('2FuPdqnyPAGRBtsURuzVpjiYePqCQMLENBz6ZAsLUxxw'),
-            new PublicKey('9AVAef1rAuyhzyjJxquUBjEgWn9zyoN4ZRZuSaibSaEv'),
-            new PublicKey('5QvcwUs3DkxcY1FHj7hjSFcrYyvXhhXkpFSGk94PLkV')
-        ]
-    } else if (ElowenProgram.cluster === 'mainnet-beta') {
-        return [
-            new PublicKey('EXPjTRuSHDSMxzxd8UbhcaktyPBn1Eg3ZZFJKn77zrp2'),
-            new PublicKey('7XeTie8StTYcH4XDePKJ6Gjz24o5RurYX2DU2uWFpnk6'),
-            new PublicKey('5n7c3o6cS9zjt3c6yDNDi3eXBRFoRitunaQuLMmEyqcW')
-        ]
-    } else {
-        throw new Error('Invalid cluster')
-    }
-}
-
-export function getMultisigPda() {
-    if (ElowenProgram.cluster === 'devnet') {
-        return new PublicKey('Afym3upPd2uJcUQfQz9gcC9ieRKf8HidFpouDnstTmek')
-    } else if (ElowenProgram.cluster === 'mainnet-beta') {
-        return new PublicKey('Afym3upPd2uJcUQfQz9gcC9ieRKf8HidFpouDnstTmek')
-    } else {
-        throw new Error('Invalid cluster')
-    }
-}
-
-export function getMultisigVaultPda(index: number = 0) {
-    const multisigPda = getMultisigPda()
-    const [vaultPda] = getVaultPda({
-        multisigPda,
-        index
-    })
-    return vaultPda
-}
-
-export async function getTokenAccountInfo(address: PublicKey): Promise<ParsedAccountData | null> {
-    const result = await ElowenProgram.connection.getParsedAccountInfo(address)
-    return result.value ? (result.value.data as ParsedAccountData) : null
-}
-
-export async function getVaultAccountElwAta(vault: VaultAccount) {
-    return getAssociatedTokenAddressSync(await getElwMint(), getVaultAccount(vault), true)
-}
-
-export async function getVaultAccountWithElwAta(vault: VaultAccount) {
-    const account = getVaultAccount(vault)
-    const elwAta = await getVaultAccountElwAta(vault)
-    return {
-        account,
-        elwAta
-    }
 }
 
 export function currencyToRustEnum(currency: Currency): IdlTypes<IDLType>['currency'] {
@@ -328,6 +156,83 @@ export function presaleTypeFromRustEnum(
     }
 }
 
+export function vaultAccountToRustEnum(vault: VaultAccount): IdlTypes<IDLType>['vaultAccount'] {
+    switch (vault) {
+        case VaultAccount.Eda:
+            return { eda: {} }
+        case VaultAccount.Team:
+            return { team: {} }
+        case VaultAccount.Reward:
+            return { reward: {} }
+        case VaultAccount.Presale:
+            return { presale: {} }
+        case VaultAccount.Treasury:
+            return { treasury: {} }
+        case VaultAccount.Platform:
+            return { platform: {} }
+        case VaultAccount.Liquidity:
+            return { liquidity: {} }
+    }
+}
+
+export function vaultAccountFromRustEnum(vault: IdlTypes<IDLType>['vaultAccount']): VaultAccount {
+    const keys = Object.keys(vault).map((k) => k.toLowerCase())
+    if (keys.includes('platform')) {
+        return VaultAccount.Platform
+    } else if (keys.includes('liquidity')) {
+        return VaultAccount.Liquidity
+    } else if (keys.includes('team')) {
+        return VaultAccount.Team
+    } else if (keys.includes('reward')) {
+        return VaultAccount.Reward
+    } else if (keys.includes('presale')) {
+        return VaultAccount.Presale
+    } else if (keys.includes('treasury')) {
+        return VaultAccount.Treasury
+    } else if (keys.includes('eda')) {
+        return VaultAccount.Eda
+    } else {
+        throw new Error('Invalid vault')
+    }
+}
+
+export function getDecimalsByCurrency(currency: Currency): number {
+    switch (currency) {
+        case Currency.USDC:
+            return 6
+        case Currency.SOL:
+        case Currency.WSOL:
+        case Currency.ELW:
+            return 9
+        default:
+            throw new Error('Invalid currency')
+    }
+}
+
+export function calculateMinimumOutput(inputAmount: number, price: number, slippageBps: number) {
+    return inputAmount * price * (1 - slippageBps / 100)
+}
+
+export function calculateMaximumInput(outputAmount: number, price: number, slippageBps: number) {
+    return outputAmount / price / (1 - slippageBps / 100)
+}
+
+export function calculateSlippageUp(
+    amount: number,
+    slippageBps: number = 0.5,
+    decimals: number = 9
+) {
+    return toTokenFormat(amount * (1 + slippageBps / 100), decimals)
+}
+
+export function calculateSlippageDown(
+    amount: number,
+    slippageBps: number = 0.5,
+    decimals: number = 9
+) {
+    return toTokenFormat(amount * (1 - slippageBps / 100), decimals)
+}
+
 export function findPresaleTypeFromNumber(number: number) {
     return Object.keys(PresaleTypeMap).find((key) => PresaleTypeMap[key] === number) as PresaleType
 }
@@ -336,8 +241,54 @@ export function findCurrencyFromNumber(number: number) {
     return Object.keys(CurrencyMap).find((key) => CurrencyMap[key] === number) as Currency
 }
 
-export function getVaultAccountTokenAtaByMint(vault: VaultAccount, mint: PublicKey) {
-    return getAssociatedTokenAddressSync(mint, getVaultAccount(vault), true)
+export function toFixedDown(num: number, decimals: number = 0) {
+    const factor = 10 ** decimals
+    return (Math.floor(num * factor) / factor).toFixed(decimals)
+}
+
+export function isSmallerPubKey(firstPubkey: PublicKey, secondPubkey: PublicKey) {
+    return Buffer.compare(firstPubkey.toBytes(), secondPubkey.toBytes()) < 0
+}
+
+export function getAmmConfig() {
+    return getAmmConfigAddress(ElowenProgram.cluster === 'devnet' ? 0 : 1)
+}
+
+export function getMultisigPda() {
+    if (ElowenProgram.cluster === 'devnet') {
+        return new PublicKey('9PryXWxc3mvhLLgawtXnjm8pFPa89TJKL4L7BytpM3gW')
+    } else if (ElowenProgram.cluster === 'mainnet-beta') {
+        return new PublicKey('9HGJSAC4HAwtQEpGSDNSWxDsksBVUFHVDUnu5JbhVwnK')
+    } else {
+        throw new Error('Invalid cluster')
+    }
+}
+
+export function getMultisigVaultPda(index: number = 0) {
+    const multisigPda = getMultisigPda()
+    const [vaultPda] = getVaultPda({
+        multisigPda,
+        index
+    })
+    return vaultPda
+}
+
+export function getMembers() {
+    if (ElowenProgram.cluster === 'devnet') {
+        return [
+            new PublicKey('9HGJSAC4HAwtQEpGSDNSWxDsksBVUFHVDUnu5JbhVwnK'),
+            new PublicKey('9AVAef1rAuyhzyjJxquUBjEgWn9zyoN4ZRZuSaibSaEv'),
+            new PublicKey('5QvcwUs3DkxcY1FHj7hjSFcrYyvXhhXkpFSGk94PLkV')
+        ]
+    } else if (ElowenProgram.cluster === 'mainnet-beta') {
+        return [
+            new PublicKey('EXPjTRuSHDSMxzxd8UbhcaktyPBn1Eg3ZZFJKn77zrp2'),
+            new PublicKey('7XeTie8StTYcH4XDePKJ6Gjz24o5RurYX2DU2uWFpnk6'),
+            new PublicKey('5n7c3o6cS9zjt3c6yDNDi3eXBRFoRitunaQuLMmEyqcW')
+        ]
+    } else {
+        throw new Error('Invalid cluster')
+    }
 }
 
 export function getCpSwapProgramId() {
@@ -358,4 +309,64 @@ export function getLockingProgramId() {
     } else {
         throw new Error('Invalid cluster')
     }
+}
+
+export function getUsdcMint() {
+    if (ElowenProgram.cluster === 'devnet') {
+        return USDC_DEVNET
+    } else if (ElowenProgram.cluster === 'mainnet-beta') {
+        return USDC_MAINNET
+    } else {
+        throw new Error('Invalid cluster')
+    }
+}
+
+export function getQuoteMint(currency: QuoteCurrency | Currency.WSOL) {
+    switch (currency) {
+        case Currency.USDC:
+            return getUsdcMint()
+        case Currency.SOL:
+        case Currency.WSOL:
+            return WSOL_MINT
+        default:
+            throw new Error('Invalid quote currency')
+    }
+}
+
+export function getQuoteCurrency(mint: PublicKey) {
+    switch (mint) {
+        case getUsdcMint():
+            return Currency.USDC
+        case WSOL_MINT:
+            return Currency.SOL
+        default:
+            throw new Error('Invalid quote currency')
+    }
+}
+
+export function getVaultAccount(vault: VaultAccount) {
+    const [pda, _bump] = PublicKey.findProgramAddressSync([Buffer.from(vault)], ElowenProgram.ID)
+    return pda
+}
+
+export async function getVaultAccountElwAta(vault: VaultAccount) {
+    return getAssociatedTokenAddressSync(await getElwMint(), getVaultAccount(vault), true)
+}
+
+export function getVaultAccountTokenAtaByMint(vault: VaultAccount, mint: PublicKey) {
+    return getAssociatedTokenAddressSync(mint, getVaultAccount(vault), true)
+}
+
+export async function getVaultAccountWithElwAta(vault: VaultAccount) {
+    const account = getVaultAccount(vault)
+    const elwAta = await getVaultAccountElwAta(vault)
+    return {
+        account,
+        elwAta
+    }
+}
+
+export async function getTokenAccountInfo(address: PublicKey): Promise<ParsedAccountData | null> {
+    const result = await ElowenProgram.connection.getParsedAccountInfo(address)
+    return result.value ? (result.value.data as ParsedAccountData) : null
 }

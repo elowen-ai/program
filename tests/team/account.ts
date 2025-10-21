@@ -1,9 +1,9 @@
 import { clientWallet, clientWallet2 } from '../common'
-import ElowenProgram, { getTeamMemberClaimAccountData } from '../../app'
+import { getTeamMemberClaimAccountData } from '../../app'
 import { PublicKey } from '@solana/web3.js'
 ;(async () => {
     const claimData1 = await getTeamMemberClaimAccountData(
-        ElowenProgram.provider.publicKey as PublicKey
+        new PublicKey('9HGJSAC4HAwtQEpGSDNSWxDsksBVUFHVDUnu5JbhVwnK')
     )
     console.log('Client member claim account 1', claimData1)
 

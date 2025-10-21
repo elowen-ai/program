@@ -36,7 +36,7 @@ describe('EDA', () => {
             const txSig = await signAndSendTransaction(transaction2, [], clientWallet2)
             console.log('Your transaction signature', txSig)
             result = true
-        } catch (error) {
+        } catch (error: any) {
             console.error('Error withdrawing ELW:', error)
             result = error.message === ErrorCode.NotEnoughBalanceInVault
         }
@@ -68,7 +68,7 @@ describe('EDA', () => {
             const txSig = await signAndSendTransaction(transaction2, [], clientWallet2)
             console.log('Your transaction signature', txSig)
             result = true
-        } catch (error) {
+        } catch (error: any) {
             result = error.message === ErrorCode.NotEnoughBalanceInVault
         }
         expect(result).to.be.equal(true)
@@ -99,7 +99,7 @@ describe('EDA', () => {
             const txSig = await signAndSendTransaction(transaction2, [], clientWallet2)
             console.log('Your transaction signature', txSig)
             result = true
-        } catch (error) {
+        } catch (error: any) {
             result = error.message === ErrorCode.NotEnoughBalanceInVault
         }
         expect(result).to.be.equal(true)

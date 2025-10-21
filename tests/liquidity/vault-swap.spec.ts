@@ -28,7 +28,7 @@ describe('Liquidity Vault Swap', () => {
                 SwapDirection.Input
             )
             await signAndSendTransaction(transaction, [], clientWallet)
-        } catch (error) {
+        } catch (error: any) {
             expect(error.message).to.be.equal(ErrorCode.Unauthorized)
         }
     })

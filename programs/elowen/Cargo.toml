@@ -11,7 +11,7 @@ name = "elowen"
 [features]
 default = []
 cpi = ["no-entrypoint"]
-devnet = []
+devnet = ["raydium-cp-swap/devnet", "raydium-locking-cpi/devnet"]
 no-entrypoint = []
 no-idl = []
 no-log-ix-name = []

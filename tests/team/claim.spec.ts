@@ -1,6 +1,6 @@
 import { expect } from 'chai'
 import { clientWallet, clientWallet2, emptyWallet } from '../common'
-import ElowenProgram, { ErrorCode, createClaimTeamMemberElwTransaction, signAndSendTransaction } from '../../app'
+import { ErrorCode, createClaimTeamMemberElwTransaction, signAndSendTransaction } from '../../app'
 import { SendTransactionError } from '@solana/web3.js'
 import { PublicKey } from '@solana/web3.js'
 
@@ -19,7 +19,7 @@ describe('Member Claim Token', () => {
         let result: any
         try {
             const transaction = await createClaimTeamMemberElwTransaction(
-                ElowenProgram.wallet.publicKey as PublicKey
+                new PublicKey('9HGJSAC4HAwtQEpGSDNSWxDsksBVUFHVDUnu5JbhVwnK')
             )
             const txSig = await signAndSendTransaction(transaction)
             console.log('Your transaction signature', txSig)

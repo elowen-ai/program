@@ -2,11 +2,12 @@ import { expect } from 'chai'
 import { clientWallet } from './common'
 import { Wallet } from '@coral-xyz/anchor'
 import ElowenProgram, {
+    getVaultAccount,
     createInitializeElwTransaction,
     signAndSendTransaction,
     ErrorCode,
-    getVaultAccount,
-    VaultAccount
+    VaultAccount,
+    getElwMint
 } from '../app'
 
 describe('Create token', () => {
@@ -43,6 +44,7 @@ describe('Create token', () => {
             const txSig = await signAndSendTransaction(transaction, [elwMint])
             console.log('Your transaction signature', txSig)
             console.log('Platform pda', getVaultAccount(VaultAccount.Platform).toBase58())
+            console.log('Elw mint', await getElwMint())
             result = true
         } catch (error: any) {
             result = error.message === ErrorCode.PdaAlreadyInUse

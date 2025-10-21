@@ -10,39 +10,42 @@ export enum ErrorCode {
     AllTokensSold = 'AllTokensSold',
     PresaleIsEnded = 'PresaleIsEnded',
     InvalidCurrency = 'InvalidCurrency',
-    NoRewardInVault = 'NoRewardInVault',
     PdaAlreadyInUse = 'PdaAlreadyInUse',
+    NoRewardInVault = 'NoRewardInVault',
+    ExceededSlippage = 'ExceededSlippage',
     PeriodNotReached = 'PeriodNotReached',
-    PresaleIsNotEnded = 'PresaleIsNotEnded',
     AllRewardsClaimed = 'AllRewardsClaimed',
+    PresaleIsNotEnded = 'PresaleIsNotEnded',
+    WrongAccountGiven = 'WrongAccountGiven',
     ZeroTradingTokens = 'ZeroTradingTokens',
+    InsufficientReward = 'InsufficientReward',
+    NoClaimableRewards = 'NoClaimableRewards',
     InsufficientBalance = 'InsufficientBalance',
-    PresaleIsNotStarted = 'PresaleIsNotStarted',
     MemberShareNotFound = 'MemberShareNotFound',
+    PresaleIsNotStarted = 'PresaleIsNotStarted',
     TokensAlreadyClaimed = 'TokensAlreadyClaimed',
+    AccountNotInitialized = 'AccountNotInitialized',
     InsufficientLiquidity = 'InsufficientLiquidity',
-    ClaimableRewardNotReady = 'ClaimableRewardNotReady',
     NotEnoughBalanceInVault = 'NotEnoughBalanceInVault',
-    ExceedsTheRemainingAmount = 'ExceedsTheRemainingAmount',
+    ClaimableRewardNotReady = 'ClaimableRewardNotReady',
+    ExceededTransactionLimit = 'ExceededTransactionLimit',
     UnsoldTokensAlreadyBurned = 'UnsoldTokensAlreadyBurned',
-    CannotClaimUntilUnlockTime = 'CannotClaimUntilUnlockTime',
+    ExceedsTheRemainingAmount = 'ExceedsTheRemainingAmount',
     CannotBurnUntilPresaleDone = 'CannotBurnUntilPresaleDone',
+    CannotClaimUntilUnlockTime = 'CannotClaimUntilUnlockTime',
     AlreadyClaimedForThisPeriod = 'AlreadyClaimedForThisPeriod',
     BelowTheMinimumContribution = 'BelowTheMinimumContribution',
-    ExceedsTheMaximumContribution = 'ExceedsTheMaximumContribution'
+    ExceedsTheMaximumContribution = 'ExceedsTheMaximumContribution',
+    CannotInitializeUntilPresaleDone = 'CannotInitializeUntilPresaleDone',
+    ThisAmountIsLockedForMiningRewards = 'ThisAmountIsLockedForMiningRewards'
+}
+
+export type ClaimableReward = {
+    timestamp: number
+    percentage: number
 }
 
 export type SolanaAddress = string | PublicKey
-
-export enum VaultAccount {
-    Eda = 'eda',
-    Team = 'team',
-    Reward = 'reward',
-    Presale = 'presale',
-    Treasury = 'treasury',
-    Liquidity = 'liquidity',
-    Platform = 'platform'
-}
 
 export enum Currency {
     USDC = 'USDC',
@@ -56,11 +59,6 @@ export enum CurrencyMap {
     SOL = 1,
     ELW = 2,
     WSOL = 3
-}
-
-export type ClaimableReward = {
-    timestamp: number
-    percentage: number
 }
 
 export type Currencies = (typeof Currency)[keyof typeof Currency]
@@ -83,6 +81,27 @@ export enum PresaleTypeMap {
     SixMonthsLockup = 2
 }
 
+export type BuyPremiumEvent = {
+    buyer: PublicKey
+    amount: number
+    currency: Currency
+}
+
+export type BuyPresaleTokenEvent = {
+    receiver: PublicKey
+    amount: number
+}
+
+export type ClaimRewardEvent = {
+    receiver: PublicKey
+    amount: number
+}
+
+export type ElwBurnEvent = {
+    amount: number
+    process: string
+}
+
 export enum SwapDirection {
     Input,
     Output
@@ -91,6 +110,16 @@ export enum SwapDirection {
 export enum RoundDirection {
     Floor,
     Ceiling
+}
+
+export enum VaultAccount {
+    Eda = 'eda',
+    Team = 'team',
+    Reward = 'reward',
+    Presale = 'presale',
+    Treasury = 'treasury',
+    Liquidity = 'liquidity',
+    Platform = 'platform'
 }
 
 export type RaydiumKeyNft = {

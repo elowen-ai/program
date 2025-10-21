@@ -1,9 +1,9 @@
 pub mod alt;
-pub mod elw;
 pub mod eda;
-pub mod team;
-pub mod reward;
-pub mod presale;
-pub mod premium;
-pub mod platform;
+pub mod elw;
 pub mod liquidity;
+pub mod platform;
+pub mod premium;
+pub mod presale;
+pub mod reward;
+pub mod team;

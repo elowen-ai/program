@@ -1,4 +1,5 @@
 import ElowenProgram from '../program'
+import { VaultAccount } from '../types'
 import {
     SystemProgram,
     SYSVAR_RENT_PUBKEY,
@@ -11,8 +12,13 @@ import {
     TOKEN_2022_PROGRAM_ID,
     ASSOCIATED_TOKEN_PROGRAM_ID
 } from '@solana/spl-token'
-import { getVaultAccount, TOKEN_METADATA_PROGRAM_ID } from '../utils'
-import { VaultAccount } from '../types'
+import {
+    getAmmConfig,
+    getCpSwapProgramId,
+    getLockingProgramId,
+    getVaultAccount,
+    TOKEN_METADATA_PROGRAM_ID
+} from '../utils'
 
 export async function createAddressLookupTableTransaction() {
     const slot = await ElowenProgram.connection.getSlot()
@@ -28,12 +34,15 @@ export async function createAddressLookupTableTransaction() {
         authority: ElowenProgram.provider.wallet.publicKey,
         lookupTable: lookupTableAddress,
         addresses: [
+            getAmmConfig(),
             TOKEN_PROGRAM_ID,
             SYSVAR_RENT_PUBKEY,
             TOKEN_2022_PROGRAM_ID,
             TOKEN_METADATA_PROGRAM_ID,
             ASSOCIATED_TOKEN_PROGRAM_ID,
             SystemProgram.programId,
+            getCpSwapProgramId(),
+            getLockingProgramId(),
             getVaultAccount(VaultAccount.Platform)
         ]
     })
