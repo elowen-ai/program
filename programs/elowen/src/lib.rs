@@ -6,22 +6,22 @@ declare_id!("3R63fNvrbn2mb2Em28i4UTPEJN83EAVQDmFuNzrkXVKw");
 
 mod constants;
 mod enums;
+mod events;
 mod functions;
 mod instructions;
 mod state;
-mod events;
 
 use enums::*;
 use instructions::{
     alt::{self, *},
-    elw::{self, *},
     eda::{self, *},
-    team::{self, *},
-    reward::{self, *},
+    elw::{self, *},
+    liquidity::{self, *},
+    platform::{self, *},
     premium::{self, *},
     presale::{self, *},
-    platform::{self, *},
-    liquidity::{self, *}
+    reward::{self, *},
+    team::{self, *},
 };
 
 #[cfg(not(feature = "no-entrypoint"))]
@@ -57,6 +57,12 @@ pub mod elowen {
     }
     // eda
 
+    // team
+    pub fn claim_team_elw(ctx: Context<ClaimTeamELW>) -> Result<()> {
+        team::claim(ctx)
+    }
+    // team
+
     // platform
     pub fn withdraw_platform_elw(ctx: Context<WithdrawPlatformELW>, amount: u64) -> Result<()> {
         platform::withdraw(ctx, amount)
@@ -66,21 +72,6 @@ pub mod elowen {
         platform::burn(ctx, amount)
     }
     // platform
-
-    // team
-    pub fn claim_team_elw(ctx: Context<ClaimTeamELW>) -> Result<()> {
-        team::claim(ctx)
-    }
-    // team
-
-    // reward
-    pub fn claim_elw_reward(
-        ctx: Context<ClaimReward>,
-        claimable_rewards: Vec<ClaimableReward>,
-    ) -> Result<()> {
-        reward::claim(ctx, claimable_rewards)
-    }
-    // reward
 
     // presale
     pub fn buy_presale_elw(
@@ -103,6 +94,33 @@ pub mod elowen {
         presale::burn(ctx)
     }
     // presale
+
+    // reward
+    pub fn claim_elw_reward(
+        ctx: Context<ClaimReward>,
+        claimable_rewards: Vec<ClaimableReward>,
+    ) -> Result<()> {
+        reward::claim(ctx, claimable_rewards)
+    }
+    // reward
+
+    // premium
+    pub fn buy_premium(
+        ctx: Context<BuyPremium>,
+        amount_to_pay: u64,
+        currency: Currency,
+    ) -> Result<()> {
+        premium::buy(ctx, amount_to_pay, currency)
+    }
+
+    pub fn withdraw_treasury_elw(ctx: Context<WithdrawTreasuryELW>, amount: u64) -> Result<()> {
+        premium::elw::withdraw(ctx, amount)
+    }
+
+    pub fn withdraw_treasury_usdc(ctx: Context<WithdrawTreasuryUSDC>, amount: u64) -> Result<()> {
+        premium::usdc::withdraw(ctx, amount)
+    }
+    // premium
 
     // liquidity
     pub fn initialize_cpmm_liquidity(
@@ -130,25 +148,91 @@ pub mod elowen {
             maximum_quote_amount,
         )
     }
-    // liquidity
 
-    // premium
-    pub fn buy_premium(
-        ctx: Context<BuyPremium>,
-        amount_to_pay: u64,
+    pub fn collect_locked_liquidity_fees(
+        ctx: Context<CollectLockedLiquidityFees>,
         currency: Currency,
     ) -> Result<()> {
-        premium::buy(ctx, amount_to_pay, currency)
+        liquidity::cpmm::collect(ctx, currency)
     }
 
-    pub fn withdraw_treasury_elw(ctx: Context<WithdrawTreasuryELW>, amount: u64) -> Result<()> {
-        premium::elw::withdraw(ctx, amount)
+    pub fn deposit_mining_liquidity(
+        ctx: Context<LiquidityMiningDeposit>,
+        currency: Currency,
+        lp_token_amount: u64,
+        maximum_elw_amount: u64,
+        maximum_quote_amount: u64,
+    ) -> Result<()> {
+        liquidity::mining::deposit(
+            ctx,
+            currency,
+            lp_token_amount,
+            maximum_elw_amount,
+            maximum_quote_amount,
+        )
     }
 
-    pub fn withdraw_treasury_usdc(ctx: Context<WithdrawTreasuryUSDC>, amount: u64) -> Result<()> {
-        premium::usdc::withdraw(ctx, amount)
+    pub fn withdraw_mining_liquidity(
+        ctx: Context<LiquidityMiningWithdraw>,
+        currency: Currency,
+        lp_token_amount: u64,
+        minimum_elw_amount: u64,
+        minimum_quote_amount: u64,
+    ) -> Result<()> {
+        liquidity::mining::withdraw(
+            ctx,
+            currency,
+            lp_token_amount,
+            minimum_elw_amount,
+            minimum_quote_amount,
+        )
     }
-    // premium
+
+    pub fn claim_mining_rewards(
+        ctx: Context<LiquidityMiningClaim>,
+        _currency: Currency,
+    ) -> Result<()> {
+        liquidity::mining::claim(ctx)
+    }
+
+    pub fn swap_cpmm(
+        ctx: Context<LiquiditySwap>,
+        amount_in: u64,
+        amount_out: u64,
+        input_currency: Currency,
+        output_currency: Currency,
+        swap_direction: SwapDirection,
+    ) -> Result<()> {
+        liquidity::cpmm::swap(
+            ctx,
+            amount_in,
+            amount_out,
+            input_currency,
+            output_currency,
+            swap_direction,
+        )
+    }
+
+    pub fn vault_swap_cpmm(
+        ctx: Context<LiquidityVaultSwap>,
+        amount_in: u64,
+        amount_out: u64,
+        vault: VaultAccount,
+        input_currency: Currency,
+        output_currency: Currency,
+        swap_direction: SwapDirection,
+    ) -> Result<()> {
+        liquidity::cpmm::vault_swap(
+            ctx,
+            amount_in,
+            amount_out,
+            vault,
+            input_currency,
+            output_currency,
+            swap_direction,
+        )
+    }
+    // liquidity
 
     // extra
     pub fn save_address_lookup_table(

@@ -1,8 +1,9 @@
 import ElowenProgram from '../program'
 import { Transaction } from '@solana/web3.js'
 import { IdlAccounts } from '@coral-xyz/anchor'
+import { getMiningStateAddress } from './liquidity'
 import { getAssociatedTokenAddressSync } from '@solana/spl-token'
-import { IDLType, SolanaAddress, VaultAccount } from '../types'
+import { Currency, IDLType, SolanaAddress, VaultAccount } from '../types'
 import {
     formatNumber,
     getMultisigVaultPda,
@@ -25,7 +26,9 @@ export async function createWithdrawPlatformElwInstruction(
         .accounts({
             elwMint,
             signer: getMultisigVaultPda(),
-            receiver: maybeToPublicKey(receiver)
+            receiver: maybeToPublicKey(receiver),
+            solState: getMiningStateAddress(Currency.SOL),
+            usdcState: getMiningStateAddress(Currency.USDC)
         })
         .accountsPartial({
             receiverTokenAta: getAssociatedTokenAddressSync(elwMint, maybeToPublicKey(receiver))
@@ -45,7 +48,9 @@ export async function createBurnPlatformElwInstruction(amount: number) {
         .burnPlatformElw(toTokenFormat(amount))
         .accounts({
             elwMint: await getElwMint(),
-            signer: ElowenProgram.wallet.publicKey
+            signer: ElowenProgram.wallet.publicKey,
+            solState: getMiningStateAddress(Currency.SOL),
+            usdcState: getMiningStateAddress(Currency.USDC)
         })
         .instruction()
 }

@@ -22,6 +22,9 @@ export const TOKEN_METADATA_PROGRAM_ID = new PublicKey(
     'metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s'
 )
 
+export const MINING_YEARLY_ELW_REWARD_PERCENTAGE = 0.25 // 25% Dynamic APR
+export const MINING_YEARLY_ELW_REWARD_MAX_PERCENTAGE = 0.8 // 80% Max APR
+
 export function isSmallerPubKey(firstPubkey: PublicKey, secondPubkey: PublicKey) {
     return Buffer.compare(firstPubkey.toBytes(), secondPubkey.toBytes()) < 0
 }
